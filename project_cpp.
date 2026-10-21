@@ -1,0 +1,35 @@
+#include <Arduino.h>
+
+const int BUTTON_PIN = 2;
+const int LED_PIN = 13;
+
+int buttonState = LOW;
+int lastButtonState = LOW;
+unsigned long lastDebounceTime = 0;
+const unsigned long DEBOUNCE_DELAY = 50; // Milliseconds
+
+void setup() {
+    pinMode(BUTTON_PIN, INPUT_PULLUP);
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
+}
+
+void loop() {
+    int reading = digitalRead(BUTTON_PIN);
+
+    if (reading != lastButtonState) {
+        lastDebounceTime = millis(); // reset timer
+    }
+
+    if ((millis() - lastDebounceTime) > DEBOUNCE_DELAY) 
+        if (reading != buttonState) {
+            buttonState = reading; // stabilized state
+
+            if (buttonState == LOW) { 
+                digitalWrite(LED_PIN, !digitalRead(LED_PIN)); // Toggle LED
+            }
+        }
+    }
+
+    lastButtonState = reading;
+}
